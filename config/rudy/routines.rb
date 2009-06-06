@@ -3,7 +3,7 @@ bonnie_dir = '/tmp/bonnie-64-read-only'
  mon, day = now.mon.to_s.rjust(2, '0'), now.day.to_s.rjust(2, '0')
  hour, min = now.hour.to_s.rjust(2, '0'), now.min.to_s.rjust(2, '0')
 bonnie_log = '/tmp/' << ['bonnie64', now.year, mon, day].join('-')
-
+report_dir = './report/' << [now.year, mon, day].join('-')
 
 # ----------------------------------------------------------- COMMANDS --------
 # The commands block defines shell commands that can be used in routines. The
@@ -22,21 +22,42 @@ end
 # To run a routine, specify its name on the command-line: rudy bonnie64
 routines do
   
-  bonnie64 do                       # Run bonnie
+  benchmark do            # Run all EBS tests
     script :root do
       # The following commands are analogous to running:
       # $ bonnie -d /rudy/disk -m EBS-1GB -r -s 1000 > bonnie_log
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-1GB', :r, :s, 1000)  > bonnie_log
-      bonnie(:d, '/mnt',        :m, 'MNT-1GB', :r, :s, 1000) >> bonnie_log
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-5GB', :r, :s, 5000) >> bonnie_log
-      bonnie(:d, '/mnt',        :m, 'MNT-5GB', :r, :s, 5000) >> bonnie_log
-      
-      # Download report to current working directory
-      download bonnie_log, [File.basename(bonnie_log), hostname].join('-')
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-1GB',  :r, :s,  1000)  > bonnie_log
+      bonnie(:d, '/mnt',        :m, 'MNT-1GB',  :r, :s,  1000) >> bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-5GB',  :r, :s,  5000) >> bonnie_log
+      bonnie(:d, '/mnt',        :m, 'MNT-5GB',  :r, :s,  5000) >> bonnie_log
+      #bonnie(:d, '/rudy/disk1', :m, 'EBS-10GB', :r, :s, 10000) >> bonnie_log
+      #bonnie(:d, '/mnt',        :m, 'MNT-10GB', :r, :s, 10000) >> bonnie_log
+    end
+    after :download_report
+  end
+  
+  quick do                # A quick to make sure everything's working
+    script :root do
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)   > bonnie_log
+      bonnie(:d, '/mnt',        :m, 'MNT-0.1GB', :r, :s, 100)  >> bonnie_log
+    end
+    after :download_report
+  end
+  
+  download_report do
+    script :root do
+      report_file = File.join([File.basename(bonnie_log), hostname].join('-'))
+      download bonnie_log, report_file
+    end
+    after_local do
+      disable_safe_mode
+      mkdir :p, report_dir
+      mv 'bonnie64*', report_dir
     end
   end
   
-  sysupdate do                     # Prep system
+  
+  sysupdate do                # Prep system
     script :root do
       apt_get 'update'
       apt_get 'install', 'build-essential', 'git-core', 'subversion'
@@ -47,7 +68,13 @@ routines do
     end
   end
 
-  bonnie64_install do              # Install Bonnie64 from source
+  installdeps do              # Install test software
+    script :root do
+    end
+    after :install_bonnie64
+  end
+  
+  install_bonnie64 do         # Install Bonnie64 from source
     script :root do
       svn 'checkout', 'http://bonnie-64.googlecode.com/svn/trunk/', bonnie_dir
       cd bonnie_dir
@@ -60,7 +87,7 @@ routines do
       create '/rudy/disk1'
     end
     after :sysupdate
-    after :bonnie64_install
+    after :installdeps
   end
   
   shutdown do

@@ -24,22 +24,28 @@ routines do
   
   benchmark do            # Run all EBS tests
     script :root do
+      date >> bonnie_log
       # The following commands are analogous to running:
       # $ bonnie -d /rudy/disk -m EBS-1GB -r -s 1000 > bonnie_log
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-1GB',  :r, :s,  1000)  > bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-1GB',  :r, :s,  1000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-1GB',  :r, :s,  1000) >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-5GB',  :r, :s,  5000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-5GB',  :r, :s,  5000) >> bonnie_log
-      #bonnie(:d, '/rudy/disk1', :m, 'EBS-10GB', :r, :s, 10000) >> bonnie_log
-      #bonnie(:d, '/mnt',        :m, 'MNT-10GB', :r, :s, 10000) >> bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-10GB', :r, :s, 10000) >> bonnie_log
+      bonnie(:d, '/mnt',        :m, 'MNT-10GB', :r, :s, 10000) >> bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-25GB', :r, :s, 25000) >> bonnie_log
+      bonnie(:d, '/mnt',        :m, 'MNT-25GB', :r, :s, 25000) >> bonnie_log
+      date >> bonnie_log
     end
     after :download_report
   end
   
   quick do                # A quick to make sure everything's working
     script :root do
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)   > bonnie_log
+      date >> bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)  >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-0.1GB', :r, :s, 100)  >> bonnie_log
+      date >> bonnie_log
     end
     after :download_report
   end

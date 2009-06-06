@@ -12,12 +12,17 @@ machines do
     end
     
     role :small do
-      size 'm1.small'              # EC2 machine type for all machines      
+      size 'm1.small'              # 1 compute unit, 1.7GB, 150GB /mnt
       ami 'ami-e348af8a'           # Alestic Debian 5.0, 32-bit (US)
     end
     
     role :large do
-      size 'm1.large'
+      size 'm1.large'              # 4 compute units, 7.5GB, 840GB /mnt
+      ami 'ami-fb57b092'           # Alestic Debian 5.0, 64-bit (US)
+    end
+    
+    role :xlarge do
+      size 'm1.xlarge'             # 8 compute units, 15GB, 1680GB /mnt
       ami 'ami-fb57b092'           # Alestic Debian 5.0, 64-bit (US)
     end
     

@@ -58,7 +58,12 @@ routines do
     after_local do
       disable_safe_mode
       mkdir :p, report_dir
-      mv 'bonnie64*', report_dir
+      reports = ls 'bonnie64*'
+      mv reports, report_dir
+      git 'add', 'report'
+      # I use quotes for the commit message because they're 
+      # not added automatically when safe mode is disabled.
+      git 'commit', :m, "'Adding #{reports.join(', ')}'"
     end
   end
   

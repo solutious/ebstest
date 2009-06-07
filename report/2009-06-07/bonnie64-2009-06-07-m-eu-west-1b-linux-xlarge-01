@@ -1,0 +1,10 @@
+Sun Jun  7 17:48:27 UTC 2009
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+EBS-0.1G    0  57.1 81.1 526.3 84.2 666.7 13.3  65.8 86.2 2000.0  0.0  1904  0.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+MNT-0.1G    0  57.1 94.3 500.0  0.0 625.0  6.2  64.1 78.8 2000.0 100.0  1238  0.0
+Sun Jun  7 17:48:56 UTC 2009

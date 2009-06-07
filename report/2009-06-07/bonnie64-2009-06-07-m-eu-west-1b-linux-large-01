@@ -28,3 +28,37 @@ EBS-0.1G    0  74.6 99.3 666.7 100.0 909.1 100.0  87.0 100.0 2000.0 100.0 133333
 Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
 MNT-0.1G    0  75.8 100.0 625.0 100.0 909.1 100.0  87.0 100.0 2500.0 100.0 100000 75.0
 Sun Jun  7 17:54:59 UTC 2009
+Sun Jun  7 17:57:07 UTC 2009
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+EBS-1GB     1  66.5 94.9 392.2 63.1 148.6 15.8  79.9 99.0 1960.8 100.0   281  0.1
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+MNT-1GB     1  70.2 93.2 609.8 95.7  37.0  3.8  86.0 98.7 2083.3 100.0   339  0.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+EBS-5GB     5  68.7 94.0  50.2  7.3  60.8  6.0  65.8 73.4 1984.1 95.6 80000 40.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+MNT-5GB     5  67.0 91.3 200.8 29.1  37.1  3.4  35.6 29.6 1960.8 100.4 133333 100.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+EBS-10GB   10  68.6 95.2  77.4 10.4  25.2  0.6  44.6 41.5  68.6  0.2   596  0.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+MNT-10GB   10  67.9 93.3 117.6 14.8  28.9  1.0  46.4 37.3 105.3  0.8   459  0.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+EBS-25GB   25  55.9 76.0  63.8  7.8  26.3  0.7  54.7 50.3  69.2  0.3   134  0.0
+              -------Sequential Output-------- ---Sequential Input-- --Random--
+              -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
+Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
+MNT-25GB   25  38.4 51.5  93.9 11.3  36.3  1.4  57.7 47.7 104.2  0.7   114  0.0
+Sun Jun  7 20:09:29 UTC 2009

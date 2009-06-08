@@ -5,7 +5,7 @@ machines do
   
   disks do                       # Define EBS volumes 
     path '/rudy/disk1' do        # The paths can be anything but
-      size 50                    # they must be unique. 
+      size 25                    # they must be unique. 
       device '/dev/sdr'          # Devices must be unique too.
     end
   end
@@ -29,6 +29,20 @@ machines do
         ami 'ami-fb57b092'           # Alestic Debian 5.0, 64-bit (US)
       end
     
+    end
+    
+    env :solaris do
+      
+      role :small do
+        size 'm1.small'
+        ami 'ami-4133d528'
+      end
+      
+      role :large do
+        size 'm1.large'
+        ami 'ami-334faa5a'
+      end
+      
     end
   end
   

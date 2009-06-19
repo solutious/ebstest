@@ -67,7 +67,7 @@ routines do
   
 
   installdeps do              # Install test software
-    #script :install_bonnie64
+    before :install_bonnie64
   end
   
   env :solaris do
@@ -113,13 +113,12 @@ routines do
       script :root do
         apt_get 'update'
         apt_get 'install', 'build-essential', 'git-core', 'subversion'
-        update_rubygems
       end
     end
     install_bonnie64 do         # Install Bonnie64 from source
       script :root do
         wget :q, 'http://github.com/solutious/bonnie64/tarball/2004-09-01'
-        gtar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
+        tar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
         mv 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b', bonnie_dir
         cd bonnie_dir
         make 'SysV'     # SysV is required for Linux

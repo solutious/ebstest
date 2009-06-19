@@ -40,7 +40,7 @@ routines do
   end
   
   quick do                # A quick to make sure everything's working
-    remote :root do
+    script :root do
       date >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)  >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-0.1GB', :r, :s, 100)  >> bonnie_log

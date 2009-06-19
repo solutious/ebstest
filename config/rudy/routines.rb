@@ -1,4 +1,4 @@
-bonnie_dir = '/tmp/bonnie-64-read-only'
+bonnie_dir = '/tmp/bonnie64'
  now = Time.now
  mon, day = now.mon.to_s.rjust(2, '0'), now.day.to_s.rjust(2, '0')
  hour, min = now.hour.to_s.rjust(2, '0'), now.min.to_s.rjust(2, '0')
@@ -10,11 +10,10 @@ report_dir = './report/' << [now.year, mon, day].join('-')
 # ones defined here are added to the default list defined by Rye::Cmd (Rudy 
 # executes all SSH commands via Rye).
 commands do
-  allow :apt_get, 'apt-get', :y, :q
-  allow :gem_install, '/usr/bin/gem', 'install', :n, '/usr/bin', :y, :V, '--no-rdoc', '--no-ri'
-  allow :gem_sources, '/usr/bin/gem', 'sources'
-  allow :update_rubygems
+  allow :apt_get, 'apt-get', :y, :q          # Linux
+  allow :pkg_install, 'pkg', 'install'       # Solaris
   allow :bonnie, "#{bonnie_dir}/Bonnie"
+  allow :gtar
 end
 
 # ----------------------------------------------------------- ROUTINES --------
@@ -33,15 +32,15 @@ routines do
       bonnie(:d, '/mnt',        :m, 'MNT-5GB',  :r, :s,  5000) >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-10GB', :r, :s, 10000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-10GB', :r, :s, 10000) >> bonnie_log
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-25GB', :r, :s, 25000) >> bonnie_log
-      bonnie(:d, '/mnt',        :m, 'MNT-25GB', :r, :s, 25000) >> bonnie_log
+      bonnie(:d, '/rudy/disk1', :m, 'EBS-25GB', :r, :s, 25000) >> bonnie_log  # del
+      bonnie(:d, '/mnt',        :m, 'MNT-25GB', :r, :s, 25000) >> bonnie_log  # del
       date >> bonnie_log
     end
     after :download_report
   end
   
   quick do                # A quick to make sure everything's working
-    script :root do
+    remote :root do
       date >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)  >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-0.1GB', :r, :s, 100)  >> bonnie_log
@@ -56,50 +55,85 @@ routines do
       download bonnie_log, report_file
     end
     after_local do
-      disable_safe_mode
       mkdir :p, report_dir
-      reports = ls 'bonnie64*'
+      reports = ls.grep(/^bonnie/)
       mv reports, report_dir
-      git 'add', 'report'
+      #git 'add', 'report'
       # I use quotes for the commit message because they're 
       # not added automatically when safe mode is disabled.
-      git 'commit', :m, "'Adding #{reports.join(', ')}'"
+      #git 'commit', :m, "'Adding #{reports.join(', ')}'"
     end
   end
   
-  
-  sysupdate do                # Prep system
-    script :root do
-      apt_get 'update'
-      apt_get 'install', 'build-essential', 'git-core', 'subversion'
-      apt_get 'install', 'ruby1.8-dev', 'rubygems'
-      gem_sources :a, 'http://gems.github.com'
-      gem_install 'rubygems-update'
-      update_rubygems
-    end
-  end
 
   installdeps do              # Install test software
-    script :root do
-    end
-    after :install_bonnie64
+    #script :install_bonnie64
   end
   
-  install_bonnie64 do         # Install Bonnie64 from source
-    script :root do
-      svn 'checkout', 'http://bonnie-64.googlecode.com/svn/trunk/', bonnie_dir
-      cd bonnie_dir
-      make 'SysV' # SysV is required for Linux (and probably Solaris)
+  env :solaris do
+    sysupdate do                # Prep system
+      script :root do
+        #setenv('PATH', "/usr/local/bin:#{getenv['PATH']}")
+        pkg_install :q, 'SUNWhea', 'SUNWarc'
+        pkg_install :q, 'SUNWgnu-libiconv'
+        pkg_install :q, 'SUNWgcc'
+        pkg_install :q, 'SUNWruby18'
+        #pkg_install :q, 'SUNWjruby'
+      end
+    end
+    install_bonnie64 do         # Install Bonnie64 from source
+      script :root do
+        wget :q, 'http://github.com/solutious/bonnie64/tarball/2004-09-01'
+        gtar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
+        mv 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b', bonnie_dir
+        cd bonnie_dir
+        setenv 'CC', '/usr/local/bin/gcc' 
+        make 'SysV'     # SysV is required for Linux
+      end
+    end
+    
+    mount do 
+      disks do
+        create '/rudy/disk1'
+      end
+    end
+    
+    startup do
+      disks do
+        create '/rudy/disk1'
+      end
+      ## Format disk in Solaris http://developer.amazonwebservices.com/connect/message.jspa?messageID=127058
+      after :sysupdate
+      after :installdeps
     end
   end
   
-  startup do
-    disks do
-      create '/rudy/disk1'
+  env :linux do
+    sysupdate do                # Prep system
+      script :root do
+        apt_get 'update'
+        apt_get 'install', 'build-essential', 'git-core', 'subversion'
+        update_rubygems
+      end
     end
-    after :sysupdate
-    after :installdeps
+    install_bonnie64 do         # Install Bonnie64 from source
+      script :root do
+        wget :q, 'http://github.com/solutious/bonnie64/tarball/2004-09-01'
+        gtar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
+        mv 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b', bonnie_dir
+        cd bonnie_dir
+        make 'SysV'     # SysV is required for Linux
+      end
+    end
+    startup do
+      disks do
+        create '/rudy/disk1'
+      end
+      after :sysupdate
+      after :installdeps
+    end
   end
+  
   
   shutdown do
     disks do

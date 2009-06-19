@@ -3,16 +3,15 @@
 # The machines block describes the "physical" characteristics of your machines.
 machines do
   
-  disks do                       # Define EBS volumes 
-    path '/rudy/disk1' do        # The paths can be anything but
-      size 25                    # they must be unique. 
-      device '/dev/sdr'          # Devices must be unique too.
-    end
-  end
-  
-  
   zone :'us-east-1b' do
     env :linux do
+
+      disks do                       # Define EBS volumes 
+        path '/rudy/disk1' do        # The paths can be anything but
+          size 25                    # they must be unique. 
+          device '/dev/sdr'          # Devices must be unique too.
+        end
+      end
     
       role :small do
         size 'm1.small'              # 1 compute unit, 1.7GB, 150GB /mnt
@@ -32,6 +31,14 @@ machines do
     end
     
     env :solaris do
+      impl :solaris
+      
+      disks do                       # Define EBS volumes 
+        path '/rudy/disk1' do        # The paths can be anything but
+          size 25                    # they must be unique. 
+          device 1
+        end
+      end
       
       role :small do
         size 'm1.small'

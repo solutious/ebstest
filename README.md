@@ -23,7 +23,7 @@ The test report will be downloaded to your current local working directory with 
 
     bonnie64-YYYY-MM-DD-m-us-east-1b-linux-small-01 
 
-## Other stuff
+## Other Commands
 
     $ rudy -e linux -r small -u root ssh        # Login via SSH as root user
     $ rudy -e linux -r small shutdown           # Terminate the EC2 instance
@@ -39,3 +39,11 @@ The test report will be downloaded to your current local working directory with 
                   -Per Char- --Block--- -Rewrite-- -Per Char- --Block--- --Seeks---
     Machine    GB M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU M/sec %CPU  /sec %CPU
     MNT-1GB     1  50.1 76.2 442.5 76.1 260.4 35.2  57.8 75.9 1315.8 76.3 57142 57.1
+
+## Future Plans ##
+
+* Add Bonnie++ tests
+* Fix Solaris tests
+* Other tests?
+
+

@@ -13,7 +13,8 @@ This gist describes a working Rudy configuration for running the Bonnie64 benchm
 
     $ cd bonnie64-aws-test
     $ rudy -e linux -r small -v startup         # Installs all necessary software
-    $ rudy -e linux -r small -v bonnie64        # Runs tests and downloads report
+    $ rudy -e linux -r small -v quick           # Runs a short test
+    $ rudy -e linux -r small -v benchmark       # Runs all stests and downloads report
 
 * `-e` the machine environment 
 * `-r` the machine role

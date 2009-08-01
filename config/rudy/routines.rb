@@ -5,6 +5,8 @@ bonnie_dir = '/tmp/bonnie64'
 bonnie_log = '/tmp/' << ['bonnie64', now.year, mon, day].join('-')
 report_dir = './report/' << [now.year, mon, day].join('-')
 
+## Update based on: http://orion.blog.heroku.com/past/2009/7/29/io_performance_on_ebs/
+
 # ----------------------------------------------------------- COMMANDS --------
 # The commands block defines shell commands that can be used in routines. The
 # ones defined here are added to the default list defined by Rye::Cmd (Rudy 
@@ -14,6 +16,7 @@ commands do
   allow :pkg_install, 'pkg', 'install'       # Solaris
   allow :bonnie, "#{bonnie_dir}/Bonnie"
   allow :gtar
+  allow :wget
 end
 
 # ----------------------------------------------------------- ROUTINES --------
@@ -22,25 +25,23 @@ end
 routines do
   
   benchmark do            # Run all EBS tests
-    script :root do
+    remote :root do
       date >> bonnie_log
       # The following commands are analogous to running:
-      # $ bonnie -d /rudy/disk -m EBS-1GB -r -s 1000 > bonnie_log
+      # $ bonnie -d /rudy/disk1 -m EBS-1GB -r -s 1000 >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-1GB',  :r, :s,  1000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-1GB',  :r, :s,  1000) >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-5GB',  :r, :s,  5000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-5GB',  :r, :s,  5000) >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-10GB', :r, :s, 10000) >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-10GB', :r, :s, 10000) >> bonnie_log
-      bonnie(:d, '/rudy/disk1', :m, 'EBS-25GB', :r, :s, 25000) >> bonnie_log  # del
-      bonnie(:d, '/mnt',        :m, 'MNT-25GB', :r, :s, 25000) >> bonnie_log  # del
       date >> bonnie_log
     end
     after :download_report
   end
   
   quick do                # A quick to make sure everything's working
-    script :root do
+    remote :root do
       date >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)  >> bonnie_log
       bonnie(:d, '/mnt',        :m, 'MNT-0.1GB', :r, :s, 100)  >> bonnie_log
@@ -50,11 +51,11 @@ routines do
   end
   
   download_report do
-    script :root do
+    remote :root do
       report_file = File.join([File.basename(bonnie_log), hostname].join('-'))
-      download bonnie_log, report_file
+      file_download bonnie_log, report_file
     end
-    after_local do
+    local do
       mkdir :p, report_dir
       reports = ls.grep(/^bonnie/)
       mv reports, report_dir
@@ -72,7 +73,7 @@ routines do
   
   env :solaris do
     sysupdate do                # Prep system
-      script :root do
+      remote :root do
         #setenv('PATH', "/usr/local/bin:#{getenv['PATH']}")
         pkg_install :q, 'SUNWhea', 'SUNWarc'
         pkg_install :q, 'SUNWgnu-libiconv'
@@ -82,7 +83,7 @@ routines do
       end
     end
     install_bonnie64 do         # Install Bonnie64 from source
-      script :root do
+      remote :root do
         wget :q, 'http://github.com/solutious/bonnie64/tarball/2004-09-01'
         gtar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
         mv 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b', bonnie_dir
@@ -110,13 +111,13 @@ routines do
   
   env :linux do
     sysupdate do                # Prep system
-      script :root do
+      remote :root do
         apt_get 'update'
         apt_get 'install', 'build-essential', 'git-core', 'subversion'
       end
     end
     install_bonnie64 do         # Install Bonnie64 from source
-      script :root do
+      remote :root do
         wget :q, 'http://github.com/solutious/bonnie64/tarball/2004-09-01'
         tar :z, :x, :f, 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b.tar.gz'
         mv 'solutious-bonnie64-82e740571a39a7ed9ce678034b19e637cafd596b', bonnie_dir

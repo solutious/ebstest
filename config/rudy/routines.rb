@@ -5,7 +5,7 @@ bonnie_dir = '/tmp/bonnie64'
 bonnie_log = '/tmp/' << ['bonnie64', now.year, mon, day].join('-')
 report_dir = './report/' << [now.year, mon, day].join('-')
 
-## Update based on: http://orion.blog.heroku.com/past/2009/7/29/io_performance_on_ebs/
+## Update based on: http://orion.heroku.com/past/2009/7/29/io_performance_on_ebs/
 
 # ----------------------------------------------------------- COMMANDS --------
 # The commands block defines shell commands that can be used in routines. The

@@ -4,10 +4,13 @@ This gist describes a working Rudy configuration for running the Bonnie64 benchm
 
 ## Installation (2 steps)
 
-1. Install [Rudy](http://github.com/solutious/rudy/)
-    * Follow the [Getting Started](http://solutious.com/products/rudy/getting-started.html) guide up to and including "Authorize user@localhost".
+1. Install [Rudy 0.9](http://github.com/solutious/rudy/)
+    * Follow the [Getting Started](http://solutious.com/products/rudy/getting-started.html) guide up to and including "Create Accounts Configuration".
 2. Download this repository:
-    * `git clone git://github.com/solutious/ebstest.git  bonnie64-aws-test`
+    * `git clone git://github.com/solutious/ebstest.git bonnie64-aws-test`
+
+<i>NOTE: Requires Rudy 0.9 or greater</i>
+
 
 ## Running the test
 

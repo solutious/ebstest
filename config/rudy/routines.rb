@@ -41,6 +41,7 @@ routines do
   end
   
   quick do                # A quick to make sure everything's working
+    before :startup
     remote :root do
       date >> bonnie_log
       bonnie(:d, '/rudy/disk1', :m, 'EBS-0.1GB', :r, :s, 100)  >> bonnie_log
@@ -48,6 +49,7 @@ routines do
       date >> bonnie_log
     end
     after :download_report
+    after :shutdown
   end
   
   download_report do
@@ -67,11 +69,8 @@ routines do
   end
   
 
-  installdeps do              # Install test software
-    before :install_bonnie64
-  end
-  
   env :solaris do
+    ## Format disk in Solaris http://developer.amazonwebservices.com/connect/message.jspa?messageID=127058
     sysupdate do                # Prep system
       remote :root do
         #setenv('PATH', "/usr/local/bin:#{getenv['PATH']}")
@@ -93,20 +92,6 @@ routines do
       end
     end
     
-    mount do 
-      disks do
-        create '/rudy/disk1'
-      end
-    end
-    
-    startup do
-      disks do
-        create '/rudy/disk1'
-      end
-      ## Format disk in Solaris http://developer.amazonwebservices.com/connect/message.jspa?messageID=127058
-      after :sysupdate
-      after :installdeps
-    end
   end
   
   env :linux do
@@ -125,20 +110,27 @@ routines do
         make 'SysV'     # SysV is required for Linux
       end
     end
-    startup do
-      disks do
-        create '/rudy/disk1'
-      end
-      after :sysupdate
-      after :installdeps
+  end
+  
+  installdeps do              # Install test software
+    before :install_bonnie64
+    remote :root do
+      mkdir :p, '/rudy/test1'
     end
   end
   
+  startup do
+    disks do
+      create '/rudy/disk1'
+    end
+    after :sysupdate
+    after :installdeps
+  end
   
   shutdown do
     disks do
       destroy '/rudy/disk1'
     end
   end
-  
+
 end

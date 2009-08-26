@@ -5,7 +5,8 @@ machines do
   
   zone :'us-east-1b' do
     env :linux do
-
+      user :root
+      
       disks do                       # Define EBS volumes 
         path '/rudy/disk1' do        # The paths can be anything but
           size 25                    # they must be unique. 
